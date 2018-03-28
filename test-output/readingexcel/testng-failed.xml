@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" verbose="5" name="Failed suite [readingexcel]">
+  <parameter name="password" value="crmsfa"/>
+  <parameter name="browser" value="chrome"/>
+  <parameter name="url" value="http://leaftaps.com/opentaps"/>
+  <parameter name="username" value="DemoSalesManager"/>
+  <test name="TestLeaf(failed)">
+    <classes>
+      <class name="dataprovider.CreateLead">
+        <methods>
+          <include name="afterSuite"/>
+          <include name="beforeTest"/>
+          <include name="afterMethod"/>
+          <include name="creatLead" invocation-numbers="0 1"/>
+          <include name="afterTest"/>
+          <include name="beforeSuite"/>
+          <include name="afterClass"/>
+          <include name="beforeMethod"/>
+          <include name="beforeClass"/>
+        </methods>
+      </class> <!-- dataprovider.CreateLead -->
+    </classes>
+  </test> <!-- TestLeaf(failed) -->
+</suite> <!-- Failed suite [readingexcel] -->

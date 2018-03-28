@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [Leaftap]">
+  <test name="CreateLead(failed)">
+    <classes>
+      <class name="learntestng.EditLead">
+        <methods>
+          <include name="editlead"/>
+        </methods>
+      </class> <!-- learntestng.EditLead -->
+      <class name="learntestng.CreateLead">
+        <methods>
+          <include name="creatLead"/>
+        </methods>
+      </class> <!-- learntestng.CreateLead -->
+      <class name="learntestng.DeleteRecord">
+        <methods>
+          <include name="deletelead"/>
+        </methods>
+      </class> <!-- learntestng.DeleteRecord -->
+    </classes>
+  </test> <!-- CreateLead(failed) -->
+</suite> <!-- Failed suite [Leaftap] -->

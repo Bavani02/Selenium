@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite thread-count="2" name="Leaftap" parallel="classes">
+	<test name="crm">
+		<classes>
+			<class name="learntestng.CreateLead" />
+			<class name="learntestng.MergeLead" />
+			<class name="learntestng.EditLead" />
+			<class name="learntestng.DeleteRecord" />
+
+		</classes>
+	</test> <!-- crm -->
+</suite> <!-- Leaftap -->

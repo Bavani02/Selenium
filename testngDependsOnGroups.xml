@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="TestLeaf" parallel="none" verbose="5">
+  <test name="CRM">
+    <classes>
+      <class name="learntestng.MergeLead"/>
+      <class name="learntestng.EditLead"/>
+      <class name="learntestng.DeleteRecord"/>
+       <class name="learntestng.CreateLead"/> 
+    </classes>
+  </test> <!-- CRM -->
+</suite> <!-- TestLeaf -->

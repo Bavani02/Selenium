@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" verbose="5" name="Failed suite [ReadExcel]">
+  <parameter name="password" value="crmsfa"/>
+  <parameter name="browser" value="chrome"/>
+  <parameter name="url" value="http://leaftaps.com/opentaps"/>
+  <parameter name="username" value="DemoSalesManager"/>
+  <test name="CRM(failed)">
+    <classes>
+      <class name="dataprovider.DeleteRecord">
+        <methods>
+          <include name="afterSuite"/>
+          <include name="beforeTest"/>
+          <include name="afterMethod"/>
+          <include name="afterTest"/>
+          <include name="beforeSuite"/>
+          <include name="afterClass"/>
+          <include name="deletelead" invocation-numbers="0 1"/>
+          <include name="beforeMethod"/>
+          <include name="beforeClass"/>
+        </methods>
+      </class> <!-- dataprovider.DeleteRecord -->
+    </classes>
+  </test> <!-- CRM(failed) -->
+</suite> <!-- Failed suite [ReadExcel] -->

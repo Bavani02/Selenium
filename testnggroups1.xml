@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Testleaf">
+<groups>
+<run>
+<exclude name="sanity"></exclude>
+</run>
+</groups>
+  <test name="otherthan sanity">
+    <classes>
+      <class name="testnggroups.EditLead"/>
+      <class name="testnggroups.MergeLead"/>
+      <class name="testnggroups.DeleteRecord"/>
+      <class name="testnggroups.CreateLead"/>
+    </classes>
+  </test> 
+</suite> 

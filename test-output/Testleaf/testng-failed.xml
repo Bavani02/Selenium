@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [TestLeaf]">
+  <test name="CRM(failed)">
+    <classes>
+      <class name="dataprovider.CreateLead">
+        <methods>
+          <include name="afterSuite"/>
+          <include name="beforeTest"/>
+          <include name="afterMethod"/>
+          <include name="creatLead"/>
+          <include name="afterTest"/>
+          <include name="beforeSuite"/>
+          <include name="afterClass"/>
+          <include name="beforeMethod"/>
+          <include name="beforeClass"/>
+        </methods>
+      </class> <!-- dataprovider.CreateLead -->
+    </classes>
+  </test> <!-- CRM(failed) -->
+</suite> <!-- Failed suite [TestLeaf] -->

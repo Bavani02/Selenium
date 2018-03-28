@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" verbose="5" name="Failed suite [Dataprovider]">
+  <parameter name="password" value="crmsfa"/>
+  <parameter name="browser" value="chrome"/>
+  <parameter name="url" value="http://leaftaps.com/opentaps"/>
+  <parameter name="username" value="DemoSalesManager"/>
+  <test name="DelandEditlead(failed)">
+    <classes>
+      <class name="dataprovider.EditLead">
+        <methods>
+          <include name="afterSuite"/>
+          <include name="beforeTest"/>
+          <include name="afterMethod"/>
+          <include name="afterTest"/>
+          <include name="beforeSuite"/>
+          <include name="editlead"/>
+          <include name="afterClass"/>
+          <include name="beforeMethod"/>
+          <include name="beforeClass"/>
+        </methods>
+      </class> <!-- dataprovider.EditLead -->
+    </classes>
+  </test> <!-- DelandEditlead(failed) -->
+</suite> <!-- Failed suite [Dataprovider] -->
