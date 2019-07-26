@@ -1,0 +1,136 @@
+package maveric_metro.UIA.base;
+
+import java.io.FileInputStream;
+import java.util.HashMap;
+import java.util.Properties;
+
+public class ProjectConfig {
+	public static Properties prop = new Properties();
+	public static String filepath;
+	static {
+		try {
+			filepath = System.getProperty("ResSuite");
+			System.out.println("FILE PATH "  + filepath);
+			if (filepath == null) {
+				filepath = System.getProperty("user.dir")+"//src//main//java//maveric_metro//UIA//resources//ProjectConfig.properties";							
+				System.out.println("FILE PATH 2"  + filepath);
+				try{
+					Thread.currentThread().getContextClassLoader().getResourceAsStream(filepath);
+					prop.load(new FileInputStream(filepath));
+				} catch (Exception E) {
+					System.out.println("Error occured"+E);
+				}
+			} else {
+				System.out.println(filepath);
+				filepath = filepath + "/" + "projectconfig.properties";
+				prop.load(new FileInputStream(filepath));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*Method used to fetch the data from the ProjectConfig file*/
+	public static String getPropertyValue(String key) {
+		return prop.getProperty(key);
+	}
+
+	/*Method used to fetch the data from the DataDependacy excel file*/
+	public static String getModuleValue(String module, String key) {
+		String tmp = null;
+		try{
+			tmp = ExcelReader.fetchModuleValue(Base.uifilePath, module.toLowerCase(), key);
+		}catch(Exception E){
+			System.out.println("Unable to find the value in excel sheet for "  + key);
+			tmp = null;
+		}
+		return tmp;
+	}
+
+	/*
+	 * Method used to fetch the data from excel sheet placed in dataSheets folder
+	 * User need to pass the module name, sheet name of the file & key to fetch the value
+	 * Example  getSheetValue("accounts","corp6017","currentCustomer")
+	 */
+	public static  String getSheetValue(String module, String sheetName, String key) {
+		String tmp = null;
+		try{
+			String filePath = System.getProperty("user.dir")+"\\src\\main\\java\\maveric_metro\\UIA\\dataSheets\\"+module.toLowerCase()+".xlsx";
+			tmp = ExcelReader.fetchModuleValue(filePath, sheetName, key);
+		}catch(Exception E){
+			System.out.println("Unable to find the value in excel sheet for "  + key);
+			tmp = null;
+		}
+		return tmp;
+	}
+
+	/*
+	 * Method used to fetch the column wise data from excel sheet placed in dataSheets folder
+	 * User need to pass the "module name", "sheet name","column"& "key" to fetch the value
+	 * Example  getSheetColumnValue("accounts","corp6017","currency","TC_01")
+	 */
+	public static String getSheetColumnValue(String module, String sheetName, String column, String key) {
+		String tmp = null;
+		try{
+			String filePath = System.getProperty("user.dir")+"\\src\\main\\java\\maveric_metro\\UIA\\dataSheets\\"+module.toLowerCase()+".xlsx";
+			tmp = ExcelReader.fetchColumnValue(filePath,sheetName,column,key);
+		}catch(Exception E){
+			System.out.println("Unable to find the value in excel sheet for "  + key);
+			tmp = null;
+		}
+		if(tmp.isEmpty()){
+			System.out.println("Unable to find the value in excel sheet for "  + key);
+			tmp = null;
+		}
+		return tmp;
+	}
+
+	/*
+	 * Method used to set the data in excel sheet placed in dataSheets folder
+	 * User need to pass the "module name", "sheet name","column", "key" & "value" to set the value
+	 * Example setSheetColumnValue("accounts","corp6017","currency","TC_01","GBP")
+	 */
+	public static void setSheetColumnValue(String module, String sheetName, String column, String key, String value) {		
+		try{
+			String filePath = System.getProperty("user.dir")+"\\src\\main\\java\\maveric_metro\\UIA\\dataSheets\\"+module.toLowerCase()+".xlsx";
+			ExcelReader.setColumnValue(filePath,sheetName,column,key,value);
+		}catch(Exception E){			
+			System.out.println("Unable to update the excel file" + E);			
+		}
+	}
+
+	/*
+	 * Method used to set the data in excel sheet placed in dataSheets folder
+	 * User need to pass the "module name", "sheet name","key" & "value" to set the value
+	 * Example setSheetValue("accounts","corp6017","TC_01","GBP")
+	 */
+	public static void setSheetValue(String module, String sheetName, String key, String value) {
+		setSheetColumnValue(module, sheetName, "value", key, value);
+	}
+
+	/*
+	 * Method used to fetch and return all column wise data from excel sheet
+	 * User need to pass the module name, sheet name & key to fetch the values
+	 * Example getSheetListValue("accounts","corp6017","currentCustomer")
+	 */
+	public static HashMap<String, String> getSheetListValue(String module, String sheetName, String key) {
+		HashMap<String, String> tmp = null;
+		try{
+			String filePath = System.getProperty("user.dir")+"\\src\\main\\java\\maveric_metro\\UIA\\dataSheets\\"+module.toLowerCase()+".xlsx";
+			tmp = ExcelReader.readListData(key,filePath,sheetName);
+		}catch(Exception E){
+			System.out.println("Unable to find the value in excel sheet for "  + key);
+			tmp = null;
+		}
+		if(tmp.isEmpty()){
+			System.out.println("Unable to find the value in excel sheet for "  + key);
+			tmp = null;
+		}
+		return tmp;
+	}
+
+	/*Method used to set the data in ProjectConfig file*/
+	public static void setPropertyValue(String key,String val) {
+		 prop.getProperty(key,val);
+	}
+}

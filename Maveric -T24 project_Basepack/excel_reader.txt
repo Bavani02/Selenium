@@ -1,0 +1,263 @@
+package maveric_metro.UIA.base;
+
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
+import com.codoid.products.exception.FilloException;
+import com.codoid.products.fillo.Connection;
+import com.codoid.products.fillo.Fillo;
+import com.codoid.products.fillo.Recordset;
+
+public class ExcelReader extends Base{
+	
+	/*
+	 * To fetch the value form the excel sheet
+	 */	
+	public static String fetchModuleValue(String sourcePath,String sheetName, String key) throws  FilloException{
+		String val = null;
+		try{
+		  Fillo fillo=new Fillo();		  
+		  Connection connection=fillo.getConnection(sourcePath);
+          String strQuery="Select Value from "+sheetName+" where Key='"+key+"'";
+          Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(strQuery);
+		  while(recordset.next()){
+  			val = recordset.getField("Value");
+	  	  }
+		  recordset.close();
+		  connection.close();
+        }catch(Exception e){
+          val = null;
+		}
+		return val;
+	}
+	
+	/*
+	 * To fetch the column wise data from excel
+	 */	
+	public static String fetchColumnValue(String sourcePath,String sheetName,String column,String key) throws  FilloException{
+		String val = null;
+		try{
+		  Fillo fillo=new Fillo();		  
+		  Connection connection=fillo.getConnection(sourcePath);
+          String strQuery="Select "+column+" from "+sheetName+" where Key='"+key+"'";
+          Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(strQuery);
+		  while(recordset.next()){
+  			val = recordset.getField(column);
+	  	  }
+		  recordset.close();
+		  connection.close();
+        }catch(Exception e){
+          val = null;
+		}
+		return val;
+	}
+
+	/*
+	 * To set the data in excel sheet
+	 */
+	public static void setColumnValue(String sourcePath,String sheetName,String column,String key,String value) throws  FilloException{
+		Fillo fillo=new Fillo();
+		String strQuery = null;
+		Connection connection=fillo.getConnection(sourcePath);
+		String sstrQuery="Select * from "+sheetName+" where key='"+key+"'";
+		try{
+			Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(sstrQuery);
+			strQuery="Update "+sheetName+" Set "+column+" ='"+value+"' WHERE key='"+key+"'";
+			recordset.close();
+		}
+		catch (Exception exc){
+			String eror = exc.getMessage();
+			if (eror.equalsIgnoreCase("No records found")){
+				strQuery ="INSERT INTO "+sheetName+" (key,"+column+")"
+							+"VALUES ('"+key+"','"+value+"')";
+			}
+		}
+		connection.executeUpdate(strQuery);
+		connection.close();
+	}
+	
+	/*
+	 * To store ofs executed output in the excel file
+	 */
+	public static void storeValue(String sourcePath,String module,String value) throws  FilloException{
+		Fillo fillo=new Fillo();
+		String strQuery = null;
+		Connection connection=fillo.getConnection(sourcePath);
+		String sstrQuery="Select * from OutputData where Module='"+module+"'";
+		try{
+			Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(sstrQuery);
+			strQuery="Update OutputData Set Value ='"+value+"' WHERE Module='"+module+"'";
+			recordset.close();
+		}
+		catch (Exception exc){
+			String eror = exc.getMessage();
+			if (eror.equalsIgnoreCase("No records found")){
+				strQuery ="INSERT INTO OutputData (Module,Value)"
+							+"VALUES ('"+module+"','"+value+"')";
+			}
+		}
+		connection.executeUpdate(strQuery);
+		connection.close();
+	}
+	
+	/*
+	 * To fetch the executed output from excel file
+	 */	
+	public static String fetchValue(String sourcePath,String module) throws  FilloException{
+		Fillo fillo=new Fillo();
+		String val = null;
+		Connection connection=fillo.getConnection(sourcePath);
+        String strQuery="Select Value from OutputData where Module='"+module+"'";
+        Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(strQuery);
+		while(recordset.next()){
+			val = recordset.getField("Value");
+		}
+		recordset.close();
+		connection.close();		
+		return val;
+	}
+	
+	/*
+	 * To store COB related data in the excel file
+	 */
+	public static void storeCOBValue(String sourcePath,String sheetName,String module,String value) throws FilloException{
+		Fillo fillo=new Fillo();
+		String strQuery = null;
+		Connection connection=fillo.getConnection(sourcePath);
+		String sstrQuery="Select * from "+sheetName+" where Module='"+module+"'";
+		try{
+			Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(sstrQuery);
+			strQuery="Update "+sheetName+" Set Value ='"+value+"' WHERE Module='"+module+"'";
+			recordset.close();
+		}
+		catch (Exception exc){
+			String eror = exc.getMessage();
+			if (eror.equalsIgnoreCase("No records found")){
+				strQuery ="INSERT INTO "+sheetName+" (Module,Value)"
+							+"VALUES ('"+module+"','"+value+"')";
+			}
+		}
+		connection.executeUpdate(strQuery);
+		connection.close();
+	}
+	/*
+	 * Read the data from the excel
+	 */
+	public String readData(String filePath,String sheetName){
+		String id = null;
+		try{
+			Fillo fillo=new Fillo();
+			String strQuery = null;
+			Connection connection=fillo.getConnection(filePath);
+					
+			strQuery="Select ID from "+sheetName+" where Control<>'Y'";
+			Recordset recordset=((com.codoid.products.fillo.Connection) connection).executeQuery(strQuery);
+			while(recordset.next()){
+				id = recordset.getField("ID");
+				String strQuery2="Update "+sheetName+" Set Control='Y'WHERE ID='"+id+"'";
+				connection.executeUpdate(strQuery2);
+				break;
+			}
+			recordset.close();
+			connection.close();
+		}catch(Exception e){
+			exitBrowser();
+		}
+		return id;
+	}
+	/*
+	 * Read data for COB scenario
+	 */
+	public String readCOBData(String runFile, String sheetName, String module_name){
+		String data = "";
+		Workbook file;
+		try {
+			file = WorkbookFactory.create(new FileInputStream(runFile));		
+			Sheet sheet = file.getSheet(sheetName);
+			for (Row row : sheet) {	
+				String value = row.getCell(0).getStringCellValue();
+				if(value.equalsIgnoreCase(module_name)){
+					data = row.getCell(1).getStringCellValue();	
+				}
+			}
+		}catch(Exception e){
+			exitBrowser();
+		}
+		return data ;
+	}
+
+	/*
+	 * To fetch the all column wise data in the excel sheet
+	 */	
+	public static HashMap<String, String> readListData(
+			String key, String configfile, String sheetname) {
+		try {
+			Workbook file;
+			file = WorkbookFactory.create(new FileInputStream(configfile));
+			Sheet sheet = file.getSheet(sheetname);
+			LinkedHashMap<String, Integer> keyValue = new LinkedHashMap<String, Integer>();
+			LinkedHashMap<Integer, String> indexTemplate = new LinkedHashMap<Integer, String>();
+			ArrayList<LinkedHashMap<Integer, String>> dataCombination = new ArrayList<LinkedHashMap<Integer, String>>();
+			int columnIndex = 0 ;
+			for (Row row : sheet) {
+				for (Cell cell : row) {
+				  columnIndex = cell.getColumnIndex();
+				  String columnName = cell.getStringCellValue();
+				  keyValue.put(columnName, columnIndex );
+				}
+			}
+			for (Row row : sheet) {
+				columnIndex = keyValue.get("key");
+				Cell firstCell = row.getCell(columnIndex);
+				String label = firstCell.getStringCellValue();
+				switch (label) {
+				case "key":
+					for (Cell cell : row) {
+						columnIndex = cell.getColumnIndex();
+						String columnName = cell.getStringCellValue();
+						indexTemplate.put(columnIndex, columnName);
+					}
+					break;
+				default:
+					if (label.equalsIgnoreCase(key)) {
+						LinkedHashMap<Integer, String> indexData = new LinkedHashMap<Integer, String>();
+						for (Cell cell : row) {
+							columnIndex = cell.getColumnIndex();
+							String columnName = cell.getStringCellValue();
+							if(!(columnName.isEmpty() || columnName.equalsIgnoreCase("-"))){								
+								indexData.put(columnIndex, columnName);	
+							}
+						}
+						dataCombination.add(indexData);
+					}
+					break;
+				}
+			}
+			LinkedHashMap<String, String> resultCombination = new LinkedHashMap<String, String>();
+			for (LinkedHashMap<Integer, String> comb : dataCombination) {
+				LinkedHashMap<String, String> dataEntry = new LinkedHashMap<String, String>();
+				for (Entry<Integer, String> t : indexTemplate.entrySet()) {
+					for (Entry<Integer, String> c : comb.entrySet()) {
+						if (t.getKey() == c.getKey()) {
+							dataEntry.put(t.getValue(), c.getValue());
+						}
+					}
+				}
+				resultCombination = dataEntry;
+			}			
+			return resultCombination;
+		} catch (Exception E) {
+			System.out.println(E.getMessage());
+		}
+		return null;
+	}
+}

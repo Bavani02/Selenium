@@ -1,0 +1,266 @@
+package maveric_metro.UIA.base;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
+
+import com.relevantcodes.extentreports.LogStatus;
+
+public class CommonMethods {
+
+	/*
+	 * To select value from a dropdown
+	 */
+	public static void selectDDValue(WebElement ele, String str){
+		 Select dropdown = new Select(ele);
+		 dropdown.selectByValue(str);
+	 }
+	
+	/*
+	 * To select a tab inside a page by providing the tab text 
+	 */
+	 public void selectTab(String val){
+		String st = "//span[text()='"+val+"']";
+		WebElement tab = Base.driver.findElement(By.xpath(st));
+		tab.click();
+	}
+	
+	/*
+	 * To select a specific menu from Left Hand Side Menu
+	 * Need to pass the menu text
+	 */
+	public void selectLHSMenu(String menu){
+		String st = "//img[@alt='"+menu+"']";
+		WebElement tab = Base.driver.findElement(By.xpath(st));
+		Base.highLight(tab);
+		Base.wait(1);
+		tab.click();
+		Base.reportTest.log(LogStatus.INFO, "Successfully click on option "+menu+" from LHS menu" );
+		Base.takeScreenShot(Base.reportTest,"MenuNavigation");
+	}
+
+	/*
+	 * To select a specific menu and sub menu from Left Hand Side Menu
+	 * Need to pass the main menu and sub menu text
+	 */	
+    public void selectLHSMenuOption (String menu, String option){		
+		WebElement tab = Base.driver.findElement(By.xpath("//img[@alt='"+menu+"']"));
+		Base.highLight(tab);
+		Base.wait(1);
+		tab.click();
+		WebElement parent = tab.findElement(By.xpath("../.."));
+		WebElement tmp = parent.findElement(By.tagName("ul"));
+		WebElement opt =tmp.findElement(By.linkText(option));
+		Base.highLight(opt);
+		Base.wait(1);
+		opt.click();
+		Base.reportTest.log(LogStatus.INFO, "Successfully clicked on option "+"'"+option+"'"+" under "+"'"+menu+"'"+" from LHS menu" );
+		Base.takeScreenShot(Base.reportTest,"MenuNavigation");		
+	}
+
+	/*
+	 * To select a specific menu from Left Hand Side Menu
+	 * Need to pass the menu text
+	 */
+	public void selectSubLHSMenu(String menu, String subMenu){
+		Boolean validation = false;
+		List<WebElement> parentOptions = Base.driver.findElements(By.xpath("//img[@alt='"+menu+"']"));				
+		for (WebElement findParent : parentOptions)
+		{
+			WebElement parent = findParent.findElement(By.xpath("../.."));
+			WebElement tmp = parent.findElement(By.tagName("ul"));
+			if(tmp.getAttribute("style").equalsIgnoreCase("display: block;")){
+				List<WebElement> options1 = tmp.findElements(By.className("clsHasKids"));
+				for (WebElement option : options1)
+				{
+					if(option.getText().trim().equalsIgnoreCase(subMenu)){
+						WebElement opt =option.findElement(By.tagName("img"));
+						validation = true;
+						Base.highLight(opt);
+						Base.wait(1);
+						opt.click();
+						break;
+					}
+				}
+			}
+		}
+		if(validation){
+			Base.reportTest.log(LogStatus.PASS, "Successfully click on option "+subMenu+" from LHS menu" );
+			Base.takeScreenShot(Base.reportTest,"SubMenuNavigation");
+		}else{
+		    Base.reportTest.log(LogStatus.FAIL, "Unable to find option "+subMenu+" from LHS menu" );
+			Base.takeScreenShot(Base.reportTest,"SubMenuNavigationFail");
+			Base.exitBrowser();
+		}		
+	}
+	/*
+	 * To select a specific menu and sub menu from Left Hand Side Menu
+	 * Need to pass the main menu and sub menu text
+	 */	
+	public void selectSubLHSOption(String menu, String subOption){
+		Boolean validation = false;
+		List<WebElement> parentOptions = Base.driver.findElements(By.xpath("//img[@alt='"+menu+"']"));			
+		for (WebElement findParent : parentOptions)
+		{
+			WebElement parent = findParent.findElement(By.xpath("../.."));
+			WebElement tmp = parent.findElement(By.tagName("ul"));
+			if(tmp.getAttribute("style").equalsIgnoreCase("display: block;")){				 
+				 WebElement opt =tmp.findElement(By.linkText(subOption));
+				 validation = true;
+				 Base.highLight(opt);
+				 Base.wait(1);
+				 opt.click();
+			}
+		}
+		if(validation){
+			Base.reportTest.log(LogStatus.PASS, "Successfully click on option "+subOption+" from LHS menu" );
+			Base.takeScreenShot(Base.reportTest,"optionNavigation");
+		}else{
+		    Base.reportTest.log(LogStatus.FAIL, "Unable to find option "+subOption+" from LHS menu" );
+			Base.takeScreenShot(Base.reportTest,"optionNavigationFail");
+			Base.exitBrowser();
+		}
+	}
+
+	/*
+	 * User need to send the name of the radio button and the value of the element
+	 */
+	public void selectRadio(String radioName, String radioValue) throws InterruptedException{
+		Boolean findRadio = false;
+		List<WebElement> allOptions = Base.driver.findElements(By.xpath("//*[contains(@id,'radio:')]"));		
+		for (WebElement option : allOptions)
+		{
+			if(option.getAttribute("name").contains(radioName)){  
+				if(option.getAttribute("value").equalsIgnoreCase(radioValue)){
+					Base.wait(1);
+					option.click();
+					Base.wait(1);
+					findRadio = true;
+					Base.reportTest.log(LogStatus.PASS, "Radio button "+radioValue+" got selected");
+					Base.takeScreenShot(Base.reportTest,"RadioButtonSelection");
+					break;
+				}
+			}
+		}
+		if(!(findRadio)){
+			Base.reportTest.log(LogStatus.FAIL, "Unable to find the radio button");
+			Base.takeScreenShot(Base.reportTest,"RadioButtonVerificationFailed");
+		}
+	}
+
+	/*
+	 * User need to send the name of the radio button and the value of the element
+	 */
+	public Boolean verifyRadioStatus(String radioName, String radioValue){
+		Boolean radioOption = false;
+		String radioSelOption = "null";
+		List<WebElement> allOptions = Base.driver.findElements(By.xpath("//*[contains(@id,'radio:')]"));		
+		for (WebElement option : allOptions)
+		{
+			if(option.getAttribute("name").contains(radioName)){
+				if(option.getAttribute("value").equalsIgnoreCase(radioValue)){
+					radioSelOption = option.getAttribute("selected");
+					break;
+				}
+			}
+		}
+		if(radioSelOption=="true"){
+			radioOption = true;
+		}else{
+			radioOption = false;
+		}
+		return radioOption;
+	}
+    
+	/*
+	 * Generate random date and send in format yyyymmdd
+	 */
+	public static String randomDate(int i) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, i);
+		calendar.set(Calendar.MONTH, randBetween(0, 11));
+		calendar.set(Calendar.DAY_OF_YEAR, randBetween(1, 28));
+		Date randomDoB = calendar.getTime();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		String date = sdf.format(randomDoB);
+		return date;
+	}
+
+	/*
+	 * Returns current date in format yyyyMMdd-hhmmss
+	 */
+	public static String currDate() {
+		Calendar calendar = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-hhmmss");
+		String date = sdf.format(calendar.getTime());
+		return date;
+	}
+
+	/*
+	 * Returns current date in format yyyyMMdd
+	 */
+	public static String currDateyyyymmdd() {
+		String date = ProjectConfig.getPropertyValue("sysdate");
+		if (date.contains("local")){
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			date = sdf.format(calendar.getTime());	
+		}
+		return date;
+	}
+
+	/*
+	 * Returns current date in format yyyyMMdd after adding corresponding dates
+	 */
+	public static String currDateyyyymmddPlus(String daystoadd) throws ParseException {
+		String date = ProjectConfig.getPropertyValue("sysdate");
+		if (date.contains("local")){
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");			
+			calendar.add(Calendar.DAY_OF_MONTH, Integer.parseInt(daystoadd));
+			date = sdf.format(calendar.getTime());						
+		}else {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(sdf.parse(date));
+			calendar.add(Calendar.DATE, Integer.parseInt(daystoadd));
+			date = sdf.format(calendar.getTime());
+		}
+		return date;
+	}
+	
+	/*
+	 * Returns Upcoming SUNDAY (WEEKEND) date in format yyyyMMdd
+	 */
+	public static String currDateyyyymmddweekend() throws ParseException {
+		String date = ProjectConfig.getPropertyValue("sysdate");
+		if (date.contains("local")){
+			Calendar calendar = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+			date = sdf.format(calendar.getTime());									
+		}else {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(sdf.parse(date));
+			calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+			date = sdf.format(calendar.getTime());
+		}		
+		return date;
+	}
+
+	/*
+	 * Random value in between 2 integers
+	 * @return
+	 */
+	private static int randBetween(int start, int end) {
+		return start + (int) Math.round(Math.random() * (end - start));
+	}
+}

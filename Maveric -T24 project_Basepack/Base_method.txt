@@ -1,0 +1,277 @@
+package maveric_metro.UIA.base;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import com.relevantcodes.extentreports.ExtentReports;
+import com.relevantcodes.extentreports.ExtentTest;
+import com.relevantcodes.extentreports.LogStatus;
+
+public class Base extends CommonMethods{
+	public static WebDriver driver;
+	public static Set<String> openWindows;
+	public static ExtentReports report = ExtentManager.getInstance();
+	public static ExtentTest reportTest;
+	public static String folder_name;
+	public static SoftAssert softAssert;	
+	public static String filePath = System.getProperty("user.dir")+"\\src\\main\\java\\maveric_metro\\UIA\\resources\\OfsData.xlsx";
+	public static String uifilePath = System.getProperty("user.dir")+"\\src\\main\\java\\maveric_metro\\UIA\\resources\\DataDependancy.xlsx";
+	
+	/*
+	 * Method used to launch a Chrome browser
+	 */
+	public WebDriver launchBrowser(){
+		if(System.getProperty("os.name").toString().contains("Mac")){
+			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"//src//main//java//maveric_metro//UIA//drivers//chromedriver");
+		}else{
+			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"//src//main//java//maveric_metro//UIA//drivers//chromedriver.exe");
+		}
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		return driver;
+	}
+
+	/*
+	 * Method used to launch a Chrome browser and navigate to T24 browser URL
+	 */
+	public WebDriver launchT24Browser(){
+//		if(System.getProperty("os.name").toString().contains("Mac")){
+//			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"//src//main//java//maveric_metro//UIA//drivers//chromedriver");
+//		}else{
+//			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"//src//main//java//maveric_metro//UIA//drivers//chromedriver.exe");
+//		}
+		WebDriverManager.chromedriver().setup();
+		driver = new ChromeDriver();
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		driver.get(ProjectConfig.getPropertyValue("t24url"));
+		return driver;
+	}
+	
+	/*
+	 * Method used to launch a IE browser and navigate to T24 browser URL 
+	 */
+	public WebDriver launchT24IEBrowser(){
+		System.setProperty("webdriver.ie.driver", System.getProperty("user.dir")+"//src//main//java//maveric_metro//UIA//drivers//IEDriverServer.exe");
+		driver = new InternetExplorerDriver();
+		driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		driver.get(ProjectConfig.getPropertyValue("t24url"));
+		return driver;
+	}
+
+	/*
+	 * Method used to navigate to specific URL, USer need to send the URL
+	 */
+	public void navigatetoURL(String URL){
+		driver.get(URL);
+	}
+
+	/*
+	 * Method used to wait in seconds
+	 */
+	public static void wait(int timeToWaitInSec){
+		try {
+			Thread.sleep(timeToWaitInSec * 1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * Method used to wait until the page loads
+	 */
+	public void waitForPageToLoad() {
+		wait(1);
+		JavascriptExecutor js=(JavascriptExecutor)driver;
+		String state = (String)js.executeScript("return document.readyState");
+
+		while(!state.equals("complete")){
+			wait(1);
+			state = (String)js.executeScript("return document.readyState");
+		}
+	}
+
+	/*
+	 * Method used to take a screenshot of the page with user define prefix
+	 */
+/*	public static void takeScreenShot(ExtentTest reportTest, String user_text){
+		Date d=new Date();
+		String screenshotFile=user_text+"_"+d.toString().replace(":", "_").replace(" ", "_")+".png";
+		String timeDetails = ExtentManager.folder_name();
+		String instanceName = reportTest.getTest().getName();
+		File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+
+		try {
+			FileUtils.copyFile(scrFile, new File(System.getProperty("user.dir")+"//screenshots//"+instanceName+"//"+timeDetails+"//"+screenshotFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}*/
+
+	/*
+	 * Method used to take a screenshot of the page with user define prefix
+	 */
+	public static void takeScreenShot(ExtentTest reportTest, String user_text){
+		try{
+		Date d=new Date();
+		String screenshotFile=user_text+"_"+d.toString().replace(":", "_").replace(" ", "_")+".jpg";
+		String timeDetails = ExtentManager.folder_name();
+		String instanceName = reportTest.getTest().getName();
+		Robot robot = new Robot();		
+		File theDir = new File(System.getProperty("user.dir")+"//screenshots//"+instanceName+"//"+timeDetails);
+		if (!theDir.exists()) {		
+		  FileUtils.forceMkdir(theDir);
+		}
+		BufferedImage screenShot = robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));		
+		ImageIO.write(screenShot, "JPG", new File((System.getProperty("user.dir")+"//screenshots//"+instanceName+"//"+timeDetails+"//"+screenshotFile)));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	/*
+	 * Method used to take a screenshot of the page
+	 */
+	public void takeScreenShot(){
+		Date d=new Date();
+		String screenshotFile=d.toString().replace(":", "_").replace(" ", "_")+".png";
+		String folder = ExtentManager.folder_name();
+		File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+		try {
+			FileUtils.copyFile(scrFile, new File(System.getProperty("user.dir")+"//screenshots//"+folder+"//"+screenshotFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * Method used to swap the iframe
+	 */
+	public static void swapFrame(int i){
+		driver.switchTo().frame(i);
+	}
+
+	/*
+	 * Method used to get the number of open windows
+	 */
+	public static Set<String> getWindowsCount(){
+		Set<String> allWindows = driver.getWindowHandles();
+		return allWindows;
+	}
+
+	/*
+	 * Method used to swap the window
+	 */
+    public static void swapWindow(int i){
+		openWindows = getWindowsCount();
+		String switchWindow = (String) openWindows.toArray()[i];
+		driver.switchTo().window(switchWindow);
+		wait(2);
+		driver.manage().window().maximize();
+	 }
+
+	/*
+	 * Method used to switch to default frame
+	 */
+    public void defaultFrame(){
+		driver.switchTo().defaultContent();
+	}
+
+    /*
+	 * Method used to quit the drive in case of any failure
+	 */
+    public static void exitBrowser(){
+    	reportTest.log(LogStatus.FAIL, "Exception occured Test Case failed" );
+		takeScreenShot(reportTest,"TestCaseFailedDueToException");
+		Assert.fail();
+	}
+    
+    /*
+	 * Method used to quit the drive in case of any failure
+	 */
+    public void failTest(){
+    	reportTest.log(LogStatus.FAIL, "Test Case Failed" );
+		takeScreenShot(reportTest,"TestCaseFailed");
+		closeAndSwapToParent();
+		try{
+			softAssert.assertAll();
+		}catch(Exception e){
+			reportTest.log(LogStatus.FAIL, e.getMessage());
+		}
+	}
+
+    /*
+	 * Method used to highlight a WebElement
+	 */
+    public static void highLight(WebElement element){
+    	try {
+    		Actions Act = new Actions(driver);
+			Act.moveToElement(element).build().perform();
+    		JavascriptExecutor js = (JavascriptExecutor) driver;
+    		js.executeScript("arguments[0].setAttribute('style','background: yellow; border:2px solid red;');", element);
+			wait(1);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	 }
+
+    /*
+	 * Method used to move the focus on a WebElement
+	 */
+    public static void move2Element(WebElement element){
+    	try {
+    		Actions Act = new Actions(driver);
+			Act.moveToElement(element).build().perform();
+			wait(1);
+    	} catch (Exception e) {
+			e.printStackTrace();
+		}
+	 }
+    
+    /*
+	 * Method used to close all other window except parent
+	 */
+    public static void closeAndSwapToParent(){
+    	int windowsCount = getWindowsCount().size();
+    	for(int currWin = windowsCount; currWin >= 2 ; --currWin){
+    		driver.close();
+    		swapWindow(currWin-2);
+    	}
+    }
+    
+    /*
+	 * Method used to check whether element exist or not
+	 */
+    public boolean isElementExist(WebElement e){
+		try{
+            boolean ext = e.isDisplayed();
+            return ext;
+        }
+        catch(Exception ex){
+            return false;
+        }
+
+	}
+}
